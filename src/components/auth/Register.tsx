@@ -1,29 +1,26 @@
-import React, {useState} from 'react';
-import {useAuth} from '../../hooks/useAuth';
-import {useNavigate, Link} from 'react-router-dom';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useAuth } from '../../hooks/useAuth';
+import { useNavigate, Link } from 'react-router-dom';
+import { registerSchema, type RegisterFormData } from './schemas';
 import './auth.css';
 
 const Register: React.FC = () => {
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [imgUrl, setImgUrl] = useState('');
-
-    const {register, error: authError, isLoading} = useAuth();
-    const [localError, setLocalError] = useState<string | null>(null);
+    const { register: authRegister, error: authError, isLoading } = useAuth();
     const navigate = useNavigate();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLocalError(null);
+    const {
+        register,
+        handleSubmit,
+        formState: { errors }
+    } = useForm<RegisterFormData>({
+        resolver: zodResolver(registerSchema)
+    });
 
-        if (!username || !email || !password) {
-            setLocalError("Please fill in all required fields.");
-            return;
-        }
-
+    const onSubmit = async (data: RegisterFormData) => {
         try {
-            await register({username, email, password, imgUrl});
+            await authRegister(data);
             navigate('/login');
         } catch (err) {
         }
@@ -32,54 +29,51 @@ const Register: React.FC = () => {
     return (
         <div className="auth-container">
             <h2 className="auth-title">Register</h2>
-            {(authError || localError) && (
+            {authError && (
                 <div className="auth-error">
-                    {localError || authError}
+                    {authError}
                 </div>
             )}
-            <form className="auth-form" onSubmit={handleSubmit}>
+            <form className="auth-form" onSubmit={handleSubmit(onSubmit)}>
                 <div className="form-group">
                     <label htmlFor="username">Username</label>
                     <input
-                        type="text"
                         id="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        type="text"
                         placeholder="Choose a username"
-                        required
+                        {...register('username')}
                     />
+                    {errors.username && <span className="error-text">{errors.username.message}</span>}
                 </div>
                 <div className="form-group">
                     <label htmlFor="email">Email</label>
                     <input
-                        type="email"
                         id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        type="email"
                         placeholder="Enter your email"
-                        required
+                        {...register('email')}
                     />
+                    {errors.email && <span className="error-text">{errors.email.message}</span>}
                 </div>
                 <div className="form-group">
                     <label htmlFor="password">Password</label>
                     <input
-                        type="password"
                         id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        type="password"
                         placeholder="Create a password"
-                        required
+                        {...register('password')}
                     />
+                    {errors.password && <span className="error-text">{errors.password.message}</span>}
                 </div>
                 <div className="form-group">
                     <label htmlFor="imgUrl">Profile Image URL (Optional)</label>
                     <input
-                        type="text"
                         id="imgUrl"
-                        value={imgUrl}
-                        onChange={(e) => setImgUrl(e.target.value)}
+                        type="text"
                         placeholder="https://example.com/avatar.jpg"
+                        {...register('imgUrl')}
                     />
+                    {errors.imgUrl && <span className="error-text">{errors.imgUrl.message}</span>}
                 </div>
                 <button type="submit" className="submit-btn" disabled={isLoading}>
                     {isLoading ? 'Registering...' : 'Register'}

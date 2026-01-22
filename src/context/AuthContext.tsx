@@ -23,13 +23,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     setUser(userData);
                 } catch (err) {
                     console.error("Failed to fetch user profile", err);
-                    // Optionally logout if user fetch fails (e.g. user deleted)
-                    // authLogout(); 
                 }
             }
             setIsLoading(false);
         };
-        initAuth();
+
+        void initAuth();
     }, []);
 
     const login = async (credentials: { email: string; password: string }) => {
@@ -37,8 +36,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setError(null);
         try {
             const response = await authLogin(credentials);
-            // Fetch full user details if not provided in login response
-            // Assuming login response contains _id
             const userData = await getUserById(response._id); 
             setUser(userData);
         } catch (err: any) {
@@ -54,8 +51,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setError(null);
         try {
             await authRegister(data);
-            // Auto login after register? Or just redirect?
-            // For now, let's assume user needs to login separately, or implement auto-login here.
         } catch (err: any) {
             setError(err.response?.data?.message || 'Registration failed');
             throw err;

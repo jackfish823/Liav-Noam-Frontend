@@ -1,27 +1,26 @@
-import React, {useState} from 'react';
+import React from 'react';
+import {useForm} from 'react-hook-form';
+import {zodResolver} from '@hookform/resolvers/zod';
 import {useAuth} from '../../hooks/useAuth';
 import {useNavigate, Link} from 'react-router-dom';
+import {loginSchema, type LoginFormData} from './schemas';
 import './auth.css';
 
 const Login: React.FC = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [localError, setLocalError] = useState<string | null>(null);
-
     const {login, error: authError, isLoading} = useAuth();
     const navigate = useNavigate();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLocalError(null);
+    const {
+        register,
+        handleSubmit,
+        formState: {errors}
+    } = useForm<LoginFormData>({
+        resolver: zodResolver(loginSchema)
+    });
 
-        if (!email || !password) {
-            setLocalError("Please fill in all fields.");
-            return;
-        }
-
+    const onSubmit = async (data: LoginFormData) => {
         try {
-            await login({email, password});
+            await login(data);
             navigate('/');
         } catch (err) {
         }
@@ -30,33 +29,31 @@ const Login: React.FC = () => {
     return (
         <div className="auth-container">
             <h2 className="auth-title">Login</h2>
-            {(authError || localError) && (
+            {authError && (
                 <div className="auth-error">
-                    {localError || authError}
+                    {authError}
                 </div>
             )}
-            <form className="auth-form" onSubmit={handleSubmit}>
+            <form className="auth-form" onSubmit={handleSubmit(onSubmit)}>
                 <div className="form-group">
                     <label htmlFor="email">Email</label>
                     <input
-                        type="email"
                         id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        type="email"
                         placeholder="Enter your email"
-                        required
+                        {...register('email')}
                     />
+                    {errors.email && <span className="error-text">{errors.email.message}</span>}
                 </div>
                 <div className="form-group">
                     <label htmlFor="password">Password</label>
                     <input
-                        type="password"
                         id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        type="password"
                         placeholder="Enter your password"
-                        required
+                        {...register('password')}
                     />
+                    {errors.password && <span className="error-text">{errors.password.message}</span>}
                 </div>
                 <button type="submit" className="submit-btn" disabled={isLoading}>
                     {isLoading ? 'Logging in...' : 'Login'}
