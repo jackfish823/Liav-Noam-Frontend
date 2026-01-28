@@ -1,7 +1,7 @@
 import React, { useState, useEffect, type ReactNode } from 'react';
 import { AuthContext } from './AuthContextDef';
 import { login as authLogin, logout as authLogout, register as authRegister } from '../services/auth.service';
-import { getUserById } from '../services/user.service'; // Assuming we fetch user details after login
+import { getUserById, updateUserProfile } from '../services/user.service';
 import type { IUser } from '../types';
 
 
@@ -31,7 +31,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         void initAuth();
     }, []);
 
-    const login = async (credentials: { email: string; password: string }) => {
+    const login = async (credentials: { email: string; password:string }) => {
         setIsLoading(true);
         setError(null);
         try {
@@ -71,8 +71,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     };
 
+    const updateUser = async (data: Partial<IUser>) => {
+        if (!user) return;
+
+        setIsLoading(true);
+        setError(null);
+        try {
+            const updatedUser = await updateUserProfile(user._id, data);
+            setUser(updatedUser);
+        } catch (err: any) {
+            setError(err.response?.data?.message || 'Failed to update profile');
+            throw err;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, error, login, register, logout }}>
+        <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, error, login, register, logout, updateUser }}>
             {children}
         </AuthContext.Provider>
     );

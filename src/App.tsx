@@ -1,8 +1,10 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, Link } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
+import Profile from './components/user/Profile';
+import EditProfile from './components/user/EditProfile';
 import './App.css';
 
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
@@ -47,6 +49,9 @@ const Home = () => {
                         </div>
                     )}
                 </div>
+                <Link to="/profile">
+                    <button>View Profile</button>
+                </Link>
                 <button onClick={() => logout()}>Logout</button>
             </div>
         </div>
@@ -63,6 +68,16 @@ function App() {
           <Home />
         </ProtectedRoute>
       } />
+      <Route path="/profile" element={
+        <ProtectedRoute>
+          <Profile />
+        </ProtectedRoute>
+      } />
+        <Route path="/edit-profile" element={
+            <ProtectedRoute>
+                <EditProfile />
+            </ProtectedRoute>
+        } />
     </Routes>
   );
 }
