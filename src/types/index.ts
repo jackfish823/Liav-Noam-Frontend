@@ -11,7 +11,7 @@ export interface IUser {
     username: string;
     email: string;
     imgUrl?: string;
-    profileImage?: string | IImage; // Can be image ID or populated image object
+    profileImage?: IImage;
 }
 
 export interface IPost {
@@ -33,7 +33,7 @@ export interface IComment {
 }
 
 export interface LoginResponse {
-    accessToken: string;
+    token: string;
     refreshToken: string;
     _id: string; // userId usually returned
 }

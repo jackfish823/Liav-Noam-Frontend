@@ -30,11 +30,15 @@ export const register = async (
 
 export const login = async (credentials: { email: string; password: string }) => {
     const response = await apiClient.post<LoginResponse>('/auth/login', credentials);
-    if (response.data.accessToken) {
-        localStorage.setItem('accessToken', response.data.accessToken);
+
+    console.log(response.data);
+
+    if (response.data.token) {
+        localStorage.setItem('accessToken', response.data.token);
         localStorage.setItem('refreshToken', response.data.refreshToken);
         localStorage.setItem('userId', response.data._id);
     }
+
     return response.data;
 };
 

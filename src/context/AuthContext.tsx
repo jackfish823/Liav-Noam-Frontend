@@ -78,6 +78,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setError(null);
         try {
             const updatedUser = await updateUserProfile(user._id, data);
+            
             setUser(updatedUser);
         } catch (err: any) {
             setError(err.response?.data?.message || 'Failed to update profile');

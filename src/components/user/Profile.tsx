@@ -3,6 +3,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import './Profile.css';
 import defaultProfilePicture from '../../assets/default-pfp.svg';
+import type { IImage } from '../../types';
 
 const Profile: React.FC = () => {
   const { user } = useAuth();
@@ -11,13 +12,23 @@ const Profile: React.FC = () => {
     return <div>Loading...</div>;
   }
 
+  const getProfileImageUrl = () => {
+    if (user.profileImage) {
+      return (user.profileImage as IImage).url;
+    }
+    return user.imgUrl || defaultProfilePicture;
+  };
+
   return (
     <div className="profile-container">
       <h2>User Profile</h2>
       <img 
-        src={user.imgUrl || defaultProfilePicture} 
+        src={getProfileImageUrl()} 
         alt="Profile" 
-        className="profile-avatar" 
+        className="profile-avatar"
+        onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+          e.currentTarget.src = defaultProfilePicture;
+        }}
       />
       <div className="profile-info">
         <p><strong>Name:</strong> {user.username}</p>
