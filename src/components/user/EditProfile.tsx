@@ -1,29 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 import './Profile.css';
 import defaultProfilePicture from '../../assets/default-pfp.svg';
 
+interface IFormInput {
+  username: string;
+  email: string;
+  imgUrl: string;
+}
+
 const EditProfile: React.FC = () => {
   const { user, updateUser } = useAuth();
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [imgUrl, setImgUrl] = useState('');
   const navigate = useNavigate();
+  const { register, handleSubmit, setValue, watch } = useForm<IFormInput>();
+  const watchedImgUrl = watch('imgUrl');
 
   useEffect(() => {
     if (user) {
-      setUsername(user.username);
-      setEmail(user.email);
-      setImgUrl(user.imgUrl || '');
+      setValue('username', user.username);
+      setValue('email', user.email);
+      setValue('imgUrl', user.imgUrl || '');
     }
-  }, [user]);
+  }, [user, setValue]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: IFormInput) => {
     if (user) {
       try {
-        await updateUser({ username, email, imgUrl });
+        await updateUser(data);
         navigate('/profile');
       } catch (error) {
         console.error('Failed to update profile', error);
@@ -37,23 +42,22 @@ const EditProfile: React.FC = () => {
 
   return (
     <div className="profile-container">
-      <img 
-        src={imgUrl || user.imgUrl || defaultProfilePicture} 
-        alt="Profile" 
-        className="profile-avatar" 
+      <img
+        src={watchedImgUrl || user.imgUrl || defaultProfilePicture}
+        alt="Profile"
+        className="profile-avatar"
         onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
           e.currentTarget.src = defaultProfilePicture;
         }}
       />
       <h2>Edit Profile</h2>
-      <form onSubmit={handleSubmit} className="profile-form">
+      <form onSubmit={handleSubmit(onSubmit)} className="profile-form">
         <div className="form-group">
           <label htmlFor="username">Name</label>
           <input
             id="username"
             type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            {...register('username')}
           />
         </div>
         <div className="form-group">
@@ -61,8 +65,7 @@ const EditProfile: React.FC = () => {
           <input
             id="email"
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            {...register('email')}
           />
         </div>
         <div className="form-group">
@@ -70,8 +73,7 @@ const EditProfile: React.FC = () => {
           <input
             id="imgUrl"
             type="text"
-            value={imgUrl}
-            onChange={(e) => setImgUrl(e.target.value)}
+            {...register('imgUrl')}
           />
         </div>
         <button type="submit" className="save-button">Save</button>
