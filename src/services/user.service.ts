@@ -11,7 +11,12 @@ export const getUserById = async (userId: string) => {
     return response.data;
 };
 
-export const updateUser = async (userId: string, userData: Partial<IUser>) => {
+export const updateUserProfile = async (userId: string, userData: Partial<IUser>) => {
+    const response = await apiClient.put<IUser>(`/user/${userId}`, userData);
+    return response.data;
+};
+
+export const updateUserAsAdmin = async (userId: string, userData: Partial<IUser>) => {
     const response = await apiClient.put<IUser>(`/user/${userId}`, userData);
     return response.data;
 };
