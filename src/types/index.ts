@@ -17,7 +17,8 @@ export interface IUser {
 export interface IPost {
     _id: string;
     message: string;
-    author: string | IUser; // depending on population
+    author: IUser;
+    commentsCount?: number;
     imgUrl?: string;
     createdAt?: string;
     updatedAt?: string;
@@ -27,7 +28,7 @@ export interface IComment {
     _id: string;
     body: string;
     postId: string | IPost;
-    author: string | IUser;
+    author: IUser;
     createdAt?: string;
     updatedAt?: string;
 }

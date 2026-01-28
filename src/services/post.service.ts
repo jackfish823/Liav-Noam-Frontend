@@ -1,8 +1,31 @@
 import apiClient from '../api/client';
 import type { IPost } from '../types';
 
+export interface PostsResponse {
+    posts: IPost[];
+    pagination: {
+        nextCursor: string | null;
+        hasMore: boolean;
+        limit?: number;
+    };
+}
+
 export const getAllPosts = async () => {
     const response = await apiClient.get<IPost[]>('/post');
+    return response.data;
+};
+
+export const getPostsPaginated = async (cursor?: string | null, limit = 10) => {
+    const params = new URLSearchParams({
+        limit: limit.toString(),
+    });
+    
+    if (cursor) {
+        params.append('cursor', cursor);
+    }
+    
+    const response = await apiClient.get<PostsResponse>(`/post?${params.toString()}`);
+    
     return response.data;
 };
 

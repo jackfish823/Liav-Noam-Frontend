@@ -6,8 +6,26 @@ export const getAllComments = async () => {
     return response.data;
 };
 
-export const getCommentsByPostId = async (postId: string) => {
-    const response = await apiClient.get<IComment[]>(`/comment?postId=${postId}`);
+export interface CommentsResponse {
+    comments: IComment[];
+    pagination: {
+        nextCursor: string | null;
+        hasMore: boolean;
+        limit?: number;
+    };
+}
+
+export const getCommentsByPostId = async (postId: string, cursor?: string | null, limit = 1) => {
+    const params = new URLSearchParams({
+        postId,
+        limit: limit.toString(),
+    });
+    
+    if (cursor) {
+        params.append('cursor', cursor);
+    }
+    
+    const response = await apiClient.get<CommentsResponse>(`/comment?${params.toString()}`);
     return response.data;
 };
 
