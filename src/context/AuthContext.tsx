@@ -46,11 +46,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     };
 
-    const register = async (data: Partial<IUser> & { password: string }) => {
+    const register = async (data: Partial<IUser> & { password: string }, imageFile?: File | null) => {
         setIsLoading(true);
         setError(null);
         try {
-            await authRegister(data);
+            await authRegister(data, imageFile);
         } catch (err: any) {
             setError(err.response?.data?.message || 'Registration failed');
             throw err;
