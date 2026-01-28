@@ -5,6 +5,9 @@ import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Profile from './components/user/Profile';
 import EditProfile from './components/user/EditProfile';
+import AllPosts from './components/posts/AllPosts';
+import PostDetail from './components/posts/PostDetail';
+import CreatePost from './components/posts/CreatePost';
 import './App.css';
 
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
@@ -52,6 +55,9 @@ const Home = () => {
                 <Link to="/profile">
                     <button>View Profile</button>
                 </Link>
+                <Link to="/posts">
+                    <button>View All Posts</button>
+                </Link>
                 <button onClick={() => logout()}>Logout</button>
             </div>
         </div>
@@ -76,6 +82,21 @@ function App() {
         <Route path="/edit-profile" element={
             <ProtectedRoute>
                 <EditProfile />
+            </ProtectedRoute>
+        } />
+        <Route path="/posts" element={
+            <ProtectedRoute>
+                <AllPosts />
+            </ProtectedRoute>
+        } />
+        <Route path="/posts/create" element={
+            <ProtectedRoute>
+                <CreatePost />
+            </ProtectedRoute>
+        } />
+        <Route path="/posts/:postId" element={
+            <ProtectedRoute>
+                <PostDetail />
             </ProtectedRoute>
         } />
     </Routes>
