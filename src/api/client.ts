@@ -24,7 +24,7 @@ apiClient.interceptors.request.use(
 );
 
 interface RefreshTokenResponse {
-    accessToken: string;
+    token: string;
     refreshToken: string;
 }
 
@@ -78,27 +78,28 @@ apiClient.interceptors.response.use(
                     refreshToken,
                 });
 
-                const { accessToken, refreshToken: newRefreshToken } = response.data;
+                const { token, refreshToken: newRefreshToken } = response.data;
 
-                localStorage.setItem('accessToken', accessToken);
+                localStorage.setItem('accessToken', token);
+
                 if (newRefreshToken) {
                     localStorage.setItem('refreshToken', newRefreshToken);
                 }
 
                 isRefreshing = false;
-                onRefreshed(accessToken);
+                onRefreshed(token);
                 refreshSubscribers = [];
 
-                originalRequest.headers.set('Authorization', `Bearer ${accessToken}`);
+                originalRequest.headers.set('Authorization', `Bearer ${token}`);
                 return apiClient(originalRequest);
 
             } catch (refreshError) {
                 isRefreshing = false;
                 refreshSubscribers = [];
-                // Clear tokens and redirect to login or handle logout
+
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('refreshToken');
-                // Optional: window.location.href = '/login'; 
+
                 return Promise.reject(refreshError);
             }
         }

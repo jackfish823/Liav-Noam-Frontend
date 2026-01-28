@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../hooks/useAuth';
+import { validateImageFile } from '../../services/image.service';
 import { useNavigate, Link } from 'react-router-dom';
 import { registerSchema, type RegisterFormData } from './schemas';
 import './auth.css';
@@ -9,6 +10,10 @@ import './auth.css';
 const Register: React.FC = () => {
     const { register: authRegister, error: authError, isLoading } = useAuth();
     const navigate = useNavigate();
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [imageError, setImageError] = useState<string | null>(null);
 
     const {
         register,
@@ -18,11 +23,54 @@ const Register: React.FC = () => {
         resolver: zodResolver(registerSchema)
     });
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+
+        if (!file) return;
+
+        const validation = validateImageFile(file);
+
+        if (!validation.valid) {
+            setImageError(validation.error || 'Invalid file');
+            setSelectedFile(null);
+            setPreviewUrl(null);
+
+            return;
+        }
+
+        setImageError(null);
+        setSelectedFile(file);
+
+        const preview = URL.createObjectURL(file);
+
+        setPreviewUrl(preview);
+    };
+
+    const handleRemoveImage = () => {
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+        }
+        
+        setSelectedFile(null);
+        setPreviewUrl(null);
+        setImageError(null);
+
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+
     const onSubmit = async (data: RegisterFormData) => {
         try {
-            await authRegister(data);
+            await authRegister(data, selectedFile);
+            
+            if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
+            }
+            
             navigate('/login');
         } catch (err) {
+            // Error is handled by AuthContext
         }
     };
 
@@ -65,16 +113,33 @@ const Register: React.FC = () => {
                     />
                     {errors.password && <span className="error-text">{errors.password.message}</span>}
                 </div>
+                
                 <div className="form-group">
-                    <label htmlFor="imgUrl">Profile Image URL (Optional)</label>
+                    <label htmlFor="profileImage">Profile Image (Optional)</label>
                     <input
-                        id="imgUrl"
-                        type="text"
-                        placeholder="https://example.com/avatar.jpg"
-                        {...register('imgUrl')}
+                        ref={fileInputRef}
+                        id="profileImage"
+                        type="file"
+                        accept="image/jpeg,image/png"
+                        onChange={handleFileChange}
+                        disabled={isLoading}
                     />
-                    {errors.imgUrl && <span className="error-text">{errors.imgUrl.message}</span>}
+                    {imageError && <span className="error-text">{imageError}</span>}
+                    
+                    {previewUrl && (
+                        <div className="image-preview">
+                            <img src={previewUrl} alt="Profile preview" />
+                            <button 
+                                type="button" 
+                                onClick={handleRemoveImage}
+                                className="remove-image-btn"
+                            >
+                                Remove
+                            </button>
+                        </div>
+                    )}
                 </div>
+
                 <button type="submit" className="submit-btn" disabled={isLoading}>
                     {isLoading ? 'Registering...' : 'Register'}
                 </button>
