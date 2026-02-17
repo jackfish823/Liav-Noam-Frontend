@@ -5,7 +5,7 @@ import {useAuth} from '../../hooks/useAuth';
 import {useNavigate, Link} from 'react-router-dom';
 import {loginSchema, type LoginFormData} from './schemas';
 import {useGoogleLogin} from '@react-oauth/google';
-import GoogleIcon from '../icons/GoogleIcon';
+import googleIcon from '../../assets/google.svg';
 import './auth.css';
 
 const Login: React.FC = () => {
@@ -87,7 +87,7 @@ const Login: React.FC = () => {
                 onClick={() => handleGoogleLogin()}
                 disabled={isLoading}
             >
-                <GoogleIcon />
+                <img src={googleIcon} alt="Google" width="18" height="18" />
                 Continue with Google
             </button>
         </div>
