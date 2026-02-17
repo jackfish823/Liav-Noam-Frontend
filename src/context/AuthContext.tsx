@@ -1,6 +1,6 @@
 import React, { useState, useEffect, type ReactNode } from 'react';
 import { AuthContext } from './AuthContextDef';
-import { login as authLogin, logout as authLogout, register as authRegister } from '../services/auth.service';
+import { login as authLogin, logout as authLogout, register as authRegister, googleLogin as authGoogleLogin } from '../services/auth.service';
 import { getUserById, updateUserProfile } from '../services/user.service';
 import type { IUser } from '../types';
 
@@ -40,6 +40,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setUser(userData);
         } catch (err: any) {
             setError(err.response?.data?.message || 'Login failed');
+            throw err;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const googleLogin = async (credential: string) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const response = await authGoogleLogin(credential);
+            const userData = await getUserById(response._id);
+
+            setUser(userData);
+        } catch (err: any) {
+            setError(err.response?.data?.message || 'Google login failed');
+            
             throw err;
         } finally {
             setIsLoading(false);
@@ -89,7 +106,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, error, login, register, logout, updateUser }}>
+        <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, error, login, googleLogin, register, logout, updateUser }}>
             {children}
         </AuthContext.Provider>
     );

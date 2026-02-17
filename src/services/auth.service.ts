@@ -55,6 +55,18 @@ export const logout = async () => {
     }
 };
 
+export const googleLogin = async (credential: string) => {
+    const response = await apiClient.post<LoginResponse>('/auth/google', { credential });
+
+    if (response.data.token) {
+        localStorage.setItem('accessToken', response.data.token);
+        localStorage.setItem('refreshToken', response.data.refreshToken);
+        localStorage.setItem('userId', response.data._id);
+    }
+
+    return response.data;
+};
+
 export const isAuthenticated = () => {
     return !!localStorage.getItem('accessToken');
 };
