@@ -4,10 +4,12 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {useAuth} from '../../hooks/useAuth';
 import {useNavigate, Link} from 'react-router-dom';
 import {loginSchema, type LoginFormData} from './schemas';
+import {useGoogleLogin} from '@react-oauth/google';
+import googleIcon from '../../assets/google.svg';
 import './auth.css';
 
 const Login: React.FC = () => {
-    const {login, error: authError, isLoading} = useAuth();
+    const {login, googleLogin, error: authError, isLoading} = useAuth();
     const navigate = useNavigate();
 
     const {
@@ -25,6 +27,20 @@ const Login: React.FC = () => {
         } catch (err) {
         }
     };
+
+    const handleGoogleLogin = useGoogleLogin({
+        onSuccess: async (tokenResponse) => {
+            try {
+                await googleLogin(tokenResponse.access_token);
+                navigate('/');
+            } catch (err) {
+                console.error('Google login error:', err);
+            }
+        },
+        onError: () => {
+            console.error('Google login failed');
+        },
+    });
 
     return (
         <div className="auth-container">
@@ -62,6 +78,18 @@ const Login: React.FC = () => {
             <div className="auth-switch">
                 Don't have an account? <Link to="/register">Register here</Link>
             </div>
+            <div className="auth-divider">
+                <span>or sign in with google</span>
+            </div>
+            <button 
+                type="button" 
+                className="google-btn" 
+                onClick={() => handleGoogleLogin()}
+                disabled={isLoading}
+            >
+                <img src={googleIcon} alt="Google" width="18" height="18" />
+                Continue with Google
+            </button>
         </div>
     );
 };

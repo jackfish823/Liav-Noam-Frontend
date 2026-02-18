@@ -7,6 +7,7 @@ export interface AuthContextType {
     isLoading: boolean;
     error: string | null;
     login: (credentials: { email: string; password: string }) => Promise<void>;
+    googleLogin: (credential: string) => Promise<void>;
     register: (data: Partial<IUser> & { password: string }, imageFile?: File | null) => Promise<void>;
     logout: () => Promise<void>;
     updateUser: (data: Partial<IUser>) => Promise<void>;
