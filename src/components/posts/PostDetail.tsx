@@ -16,6 +16,8 @@ const PostDetail: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [commentBody, setCommentBody] = useState('');
   const [commentError, setCommentError] = useState<string | null>(null);
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
   const observerTarget = useRef<HTMLDivElement>(null);
 
   const {
@@ -27,7 +29,7 @@ const PostDetail: React.FC = () => {
     isError: isCommentsError,
     createComment: postComment,
     isCreatingComment,
-  } = useCommentsByPost({ postId: postId || '', limit: 5 });
+  } = useCommentsByPost({ postId: postId || '', limit: 10 });
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -115,7 +117,7 @@ const PostDetail: React.FC = () => {
 
   if (isLoadingPost) {
     return (
-      <div className="app-container">
+      <div className="posts-container">
         <div className="loading-spinner">Loading post...</div>
       </div>
     );
@@ -123,11 +125,8 @@ const PostDetail: React.FC = () => {
 
   if (error || !post) {
     return (
-      <div className="app-container">
+      <div className="posts-container">
         <div className="error-message">{error || 'Post not found'}</div>
-        <Link to="/posts">
-          <button>Back to Posts</button>
-        </Link>
       </div>
     );
   }
@@ -135,15 +134,7 @@ const PostDetail: React.FC = () => {
   const author = post.author as { username: string; profileImage?: IImage };
 
   return (
-    <div className="app-container">
-      <div className="post-detail-nav">
-        <Link to="/posts">
-          <button className="back-button">
-            ← Back
-          </button>
-        </Link>
-      </div>
-
+    <div className="posts-container">
       <div className="post-detail">
         <div className="post-detail-header">
           <img 
@@ -160,11 +151,38 @@ const PostDetail: React.FC = () => {
               {post.createdAt ? new Date(post.createdAt).toLocaleString() : ''}
             </span>
           </div>
+          <button
+            className={`post-detail-like-btn${liked ? ' liked' : ''}`}
+            onClick={() => {
+              setLiked(v => !v);
+              setLikeCount(c => liked ? c - 1 : c + 1);
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill={liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+          </button>
         </div>
+
+        {post.imgUrl ? (
+          <div className="post-detail-image">
+            <img src={post.imgUrl} alt="Post" />
+          </div>
+        ) : (
+          <div className="post-card-image-placeholder">
+            <span>No image yet</span>
+          </div>
+        )}
 
         <div className="post-detail-content">
           <p>{post.message}</p>
         </div>
+
+        {likeCount > 0 && (
+          <div className="post-detail-likes">
+            ❤️ Liked by <strong>{likeCount}</strong> {likeCount === 1 ? 'person' : 'people'}
+          </div>
+        )}
 
         <div className="comments-section">
           <h3>Comments ({post.commentsCount})</h3>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { usePosts } from '../../hooks/usePosts';
 import './posts.css';
@@ -27,7 +27,7 @@ const CreatePost: React.FC = () => {
       },
       {
         onSuccess: () => {
-          navigate('/posts');
+          navigate('/');
         },
         onError: (err: any) => {
           setError(err.response?.data?.message || 'Failed to create post');
@@ -38,13 +38,7 @@ const CreatePost: React.FC = () => {
 
   return (
     <div className="posts-container">
-      <div className="posts-header">
-        <Link to="/posts">
-          <button className="nav-button">← Cancel</button>
-        </Link>
-        <h1>Create Post</h1>
-        <div style={{ width: '100px' }}></div>
-      </div>
+      <h1 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>Create Post</h1>
 
       <div className="create-post-form-container">
         <form onSubmit={handleSubmit} className="create-post-form">
