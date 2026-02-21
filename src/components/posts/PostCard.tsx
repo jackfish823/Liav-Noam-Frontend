@@ -9,7 +9,11 @@ interface PostCardProps {
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
-  const { _id: postId, author, commentsCount, createdAt, message, imgUrl } = post;
+  const { _id: postId, author, commentsCount, createdAt, updatedAt, message, image } = post;
+
+  const isEdited = Boolean(
+    createdAt && updatedAt && new Date(updatedAt).getTime() !== new Date(createdAt).getTime()
+  );
 
   const getAuthorImage = () => {
     if (author.profileImage) {
@@ -33,17 +37,16 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           <span className="post-card-username">{author.username}</span>
           <span className="post-card-date">
             {createdAt ? new Date(createdAt).toLocaleDateString() : ''}
+            {isEdited && <span className="post-edited-mark"> · edited</span>}
           </span>
         </div>
       </div>
 
-      {imgUrl && (
+      {image?.url ? (
         <div className="post-card-image">
-          <img src={imgUrl} alt="Post" />
+          <img src={image.url} alt="Post" />
         </div>
-      )}
-
-      {!imgUrl && (
+      ) : (
         <div className="post-card-image-placeholder">
           <span>No image yet</span>
         </div>

@@ -19,7 +19,7 @@ export interface IPost {
     message: string;
     author: IUser;
     commentsCount?: number;
-    imgUrl?: string;
+    image?: IImage;
     createdAt?: string;
     updatedAt?: string;
 }

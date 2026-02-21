@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getPostById } from '../../services/post.service';
 import { useAuth } from '../../hooks/useAuth';
 import { useCommentsByPost } from '../../hooks/useCommentsByPost';
@@ -11,6 +11,7 @@ import './posts.css';
 const PostDetail: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [post, setPost] = useState<IPost | null>(null);
   const [isLoadingPost, setIsLoadingPost] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,6 +30,8 @@ const PostDetail: React.FC = () => {
     isError: isCommentsError,
     createComment: postComment,
     isCreatingComment,
+    updateComment,
+    isUpdatingComment,
   } = useCommentsByPost({ postId: postId || '', limit: 10 });
 
   useEffect(() => {
@@ -131,7 +134,7 @@ const PostDetail: React.FC = () => {
     );
   }
 
-  const author = post.author as { username: string; profileImage?: IImage };
+  const author = post.author as IPost['author'];
 
   return (
     <div className="posts-container">
@@ -149,8 +152,24 @@ const PostDetail: React.FC = () => {
             <h2>{author.username}</h2>
             <span className="post-date">
               {post.createdAt ? new Date(post.createdAt).toLocaleString() : ''}
+              {post.createdAt && post.updatedAt &&
+                new Date(post.updatedAt).getTime() !== new Date(post.createdAt).getTime() && (
+                  <span className="post-edited-mark"> · edited</span>
+              )}
             </span>
           </div>
+          {user?._id === author._id && (
+            <button
+              className="post-detail-edit-btn"
+              onClick={() => navigate(`/posts/${postId}/edit`)}
+              title="Edit post"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+              </svg>
+            </button>
+          )}
           <button
             className={`post-detail-like-btn${liked ? ' liked' : ''}`}
             onClick={() => {
@@ -164,9 +183,9 @@ const PostDetail: React.FC = () => {
           </button>
         </div>
 
-        {post.imgUrl ? (
+        {post.image?.url ? (
           <div className="post-detail-image">
-            <img src={post.imgUrl} alt="Post" />
+            <img src={post.image.url} alt="Post" />
           </div>
         ) : (
           <div className="post-card-image-placeholder">
@@ -220,7 +239,13 @@ const PostDetail: React.FC = () => {
             <>
               <div className="comments-list">
                 {comments.map((comment) => (
-                  <Comment key={comment._id} comment={comment} />
+                  <Comment
+                    key={comment._id}
+                    comment={comment}
+                    currentUserId={user?._id}
+                    onUpdate={(commentId, body) => updateComment({ commentId, body })}
+                    isUpdating={isUpdatingComment}
+                  />
                 ))}
               </div>
               

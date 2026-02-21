@@ -1,72 +1,91 @@
-import React, { useState, useRef, type ChangeEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
-import { usePosts } from '../../hooks/usePosts';
+import React, { useState, useRef, useEffect , type FC } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { usePostById } from '../../hooks/usePostById';
 import { useImageUpload } from '../../hooks/useImageUpload';
 import './posts.css';
 
-const CreatePost: React.FC = () => {
-  const { user } = useAuth();
+const EditPost: FC = () => {
+  const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
-  const { createPost, isCreatingPost } = usePosts();
+
+  const { post, isLoading, isError, updatePost, isUpdating, updateError } = usePostById(postId!);
   const { previewUrl, uploadedImage, isUploading, uploadError, uploadImageFile, clearUploadedImage } = useImageUpload();
+
   const [message, setMessage] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
+  const [imageRemoved, setImageRemoved] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    if (post) {
+      setMessage(post.message);
+      setCurrentImageUrl(post.image?.url ?? null);
+    }
+  }, [post]);
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-
     if (!file) return;
-
-    setError(null);
-
+    setImageRemoved(false);
     await uploadImageFile(file);
   };
 
   const handleRemoveImage = () => {
-    clearUploadedImage();
+    if (uploadedImage) {
+      clearUploadedImage();
+    } else {
+      setCurrentImageUrl(null);
+      setImageRemoved(true);
+    }
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!message.trim()) return;
 
-    if (!message.trim()) {
-      setError('Please enter a message');
-      return;
+    let imageField: string | null | undefined;
+    if (uploadedImage) {
+      imageField = uploadedImage.id;
+    } else if (imageRemoved) {
+      imageField = null;
+    } else if (post?.image) {
+      imageField = post.image.id;
     }
 
-    setError(null);
-    createPost(
-      { message: message.trim(), author: user!._id, image: uploadedImage?.id ?? undefined },
-      {
-        onSuccess: () => {
-          clearUploadedImage();
-          navigate('/');
-        },
-        onError: (err: any) => {
-          setError(err.response?.data?.message || 'Failed to create post');
-        },
-      }
+    updatePost(
+      { message: message.trim(), image: imageField },
+      { onSuccess: () => navigate(-1) }
     );
   };
 
-  const isSubmitting = isCreatingPost || isUploading;
+  const displayImageUrl = previewUrl || currentImageUrl;
+  const isSubmitting = isUpdating || isUploading;
+  const error = updateError?.message || uploadError;
+
+  if (isLoading) {
+    return <div className="posts-container"><div className="loading-spinner">Loading...</div></div>;
+  }
+
+  if (isError || !post) {
+    return <div className="posts-container"><div className="error-message">Post not found</div></div>;
+  }
 
   return (
     <div className="posts-container">
       <div className="create-post-form-container">
-        <h2 className="create-post-title">Create Post</h2>
+        <h2 className="create-post-title">Edit Post</h2>
 
         <form onSubmit={handleSubmit} className="create-post-form">
-          {(error || uploadError) && <div className="form-error">{error || uploadError}</div>}
+          {error && <div className="form-error">{error}</div>}
 
-          {/* Image area */}
-          <div className="create-post-image-area" onClick={() => !previewUrl && fileInputRef.current?.click()}>
-            {previewUrl ? (
+          <div
+            className="create-post-image-area"
+            onClick={() => !displayImageUrl && fileInputRef.current?.click()}
+          >
+            {displayImageUrl ? (
               <>
-                <img src={previewUrl} alt="Preview" className="create-post-image-preview" />
+                <img src={displayImageUrl} alt="Preview" className="create-post-image-preview" />
                 {isUploading && (
                   <div className="create-post-image-uploading">
                     <div className="spinner-small"></div>
@@ -103,10 +122,8 @@ const CreatePost: React.FC = () => {
             style={{ display: 'none' }}
           />
 
-          {/* Caption */}
           <div className="form-group">
             <textarea
-              id="message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Write a caption..."
@@ -122,7 +139,7 @@ const CreatePost: React.FC = () => {
             className="submit-post-btn"
             disabled={isSubmitting || !message.trim()}
           >
-            {isCreatingPost ? 'Posting...' : 'Share'}
+            {isUploading ? 'Uploading...' : isUpdating ? 'Saving...' : 'Save'}
           </button>
         </form>
       </div>
@@ -130,4 +147,4 @@ const CreatePost: React.FC = () => {
   );
 };
 
-export default CreatePost;
+export default EditPost;

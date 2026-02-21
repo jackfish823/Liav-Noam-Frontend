@@ -10,6 +10,7 @@ import AllPosts from './components/posts/AllPosts';
 import MyPosts from './components/posts/MyPosts';
 import PostDetail from './components/posts/PostDetail';
 import CreatePost from './components/posts/CreatePost';
+import EditPost from './components/posts/EditPost';
 import './App.css';
 
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
@@ -37,6 +38,7 @@ function App() {
             <Route path="/my-posts" element={<ProtectedRoute><MyPosts /></ProtectedRoute>} />
             <Route path="/posts/create" element={<ProtectedRoute><CreatePost /></ProtectedRoute>} />
             <Route path="/posts/:postId" element={<ProtectedRoute><PostDetail /></ProtectedRoute>} />
+            <Route path="/posts/:postId/edit" element={<ProtectedRoute><EditPost /></ProtectedRoute>} />
         </Routes>
     );
 }

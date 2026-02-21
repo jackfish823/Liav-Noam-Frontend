@@ -39,7 +39,7 @@ export const createComment = async (commentData: { body: string; postId: string;
     return response.data;
 };
 
-export const updateComment = async (commentId: string, commentData: Partial<IComment>) => {
+export const updateComment = async (commentId: string, commentData: { body: string }) => {
     const response = await apiClient.put<IComment>(`/comment/${commentId}`, commentData);
     return response.data;
 };

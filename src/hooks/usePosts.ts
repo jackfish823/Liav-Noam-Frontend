@@ -26,7 +26,7 @@ export const usePosts = ({ limit = 10, author }: UsePostsProps = {}) => {
   const posts = data?.pages.flatMap(page => page.posts) ?? [];
 
   const createPostMutation = useMutation({
-    mutationFn: (postData: { message: string; author: string }) => createPost(postData),
+    mutationFn: (postData: { message: string; author: string; image?: string }) => createPost(postData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts', 'infinite'] });
     },

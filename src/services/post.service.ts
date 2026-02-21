@@ -35,12 +35,12 @@ export const getPostById = async (postId: string) => {
     return response.data;
 };
 
-export const createPost = async (postData: { message: string; author: string; imgUrl?: string }) => {
+export const createPost = async (postData: { message: string; author: string; image?: string }) => {
     const response = await apiClient.post<IPost>('/post', postData);
     return response.data;
 };
 
-export const updatePost = async (postId: string, postData: Partial<IPost>) => {
+export const updatePost = async (postId: string, postData: { message: string; image?: string | null }) => {
     const response = await apiClient.put<IPost>(`/post/${postId}`, postData);
     return response.data;
 };
