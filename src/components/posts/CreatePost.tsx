@@ -41,9 +41,9 @@ const CreatePost: React.FC = () => {
     createPost(
       { message: message.trim(), author: user!._id, image: uploadedImage?.id ?? undefined },
       {
-        onSuccess: () => {
+        onSuccess: (newPost) => {
           clearUploadedImage();
-          navigate('/');
+          navigate(`/posts/${newPost._id}`, { replace: true });
         },
         onError: (err: any) => {
           setError(err.response?.data?.message || 'Failed to create post');
@@ -117,13 +117,23 @@ const CreatePost: React.FC = () => {
             <small className="char-count">{message.length}/500</small>
           </div>
 
-          <button
-            type="submit"
-            className="submit-post-btn"
-            disabled={isSubmitting || !message.trim()}
-          >
-            {isCreatingPost ? 'Posting...' : 'Share'}
-          </button>
+          <div className="create-post-actions">
+            <button
+              type="button"
+              className="create-post-cancel-btn"
+              onClick={() => navigate('/')}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="submit-post-btn"
+              disabled={isSubmitting || !message.trim()}
+            >
+              {isCreatingPost ? 'Posting...' : 'Share'}
+            </button>
+          </div>
         </form>
       </div>
     </div>

@@ -48,3 +48,18 @@ export const deleteComment = async (commentId: string) => {
     const response = await apiClient.delete(`/comment/${commentId}`);
     return response.data;
 };
+
+export const upvoteComment = async (commentId: string) => {
+    const response = await apiClient.post<IComment>(`/comment/${commentId}/vote`, { value: 1 });
+    return response.data;
+};
+
+export const downvoteComment = async (commentId: string) => {
+    const response = await apiClient.post<IComment>(`/comment/${commentId}/vote`, { value: -1 });
+    return response.data;
+};
+
+export const removeCommentVote = async (commentId: string) => {
+    const response = await apiClient.delete<IComment>(`/comment/${commentId}/vote`);
+    return response.data;
+};

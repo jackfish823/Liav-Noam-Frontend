@@ -55,7 +55,7 @@ const EditPost: FC = () => {
 
     updatePost(
       { message: message.trim(), image: imageField },
-      { onSuccess: () => navigate(-1) }
+      { onSuccess: () => navigate(`/posts/${postId}`) }
     );
   };
 
@@ -134,13 +134,23 @@ const EditPost: FC = () => {
             <small className="char-count">{message.length}/500</small>
           </div>
 
-          <button
-            type="submit"
-            className="submit-post-btn"
-            disabled={isSubmitting || !message.trim()}
-          >
-            {isUploading ? 'Uploading...' : isUpdating ? 'Saving...' : 'Save'}
-          </button>
+          <div className="create-post-actions">
+            <button
+              type="button"
+              className="create-post-cancel-btn"
+              onClick={() => navigate(postId ? `/posts/${postId}` : -1, { replace: true })}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="submit-post-btn"
+              disabled={isSubmitting || !message.trim()}
+            >
+              {isUploading ? 'Uploading...' : isUpdating ? 'Saving...' : 'Save'}
+            </button>
+          </div>
         </form>
       </div>
     </div>

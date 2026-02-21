@@ -1,17 +1,22 @@
-import React, {type FC, useState } from 'react';
-import type { IComment, IImage } from '../../types';
+import React, { type FC, useState } from 'react';
+import type { IComment, IImage, CommentVoteDirection } from '../../types';
+import { useCommentVote } from '../../hooks/useCommentVote';
 import defaultProfilePicture from '../../assets/default-pfp.svg';
 import './posts.css';
 
 interface CommentProps {
   comment: IComment;
+  postId: string;
   currentUserId?: string;
   onUpdate?: (commentId: string, body: string) => void;
   isUpdating?: boolean;
 }
 
-const Comment: FC<CommentProps> = ({ comment, currentUserId, onUpdate, isUpdating }) => {
-  const { author, createdAt, updatedAt, body } = comment;
+const Comment: FC<CommentProps> = ({ comment, postId, currentUserId, onUpdate, isUpdating }) => {
+  const { author, createdAt, updatedAt, body, upCount = 0, downCount = 0, userVote: currentVote } = comment;
+  const score = upCount - downCount;
+  const { vote, isPending } = useCommentVote(comment._id, postId);
+
   const [isEditing, setIsEditing] = useState(false);
   const [editBody, setEditBody] = useState(body);
 
@@ -45,8 +50,47 @@ const Comment: FC<CommentProps> = ({ comment, currentUserId, onUpdate, isUpdatin
     setIsEditing(false);
   };
 
+  const handleUp = () => {
+    if (isPending) return;
+
+    vote((currentVote === 1 ? 0 : 1) as CommentVoteDirection);
+  };
+
+  const handleDown = () => {
+    if (isPending) return;
+
+    vote((currentVote === -1 ? 0 : -1) as CommentVoteDirection);
+  };
+
   return (
     <div className="comment">
+      <div className="comment-vote">
+        <button
+          type="button"
+          className={`comment-vote-btn comment-vote-up${currentVote === 1 ? ' active' : ''}`}
+          onClick={handleUp}
+          disabled={isPending}
+          title="Upvote"
+          aria-label="Upvote"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7 14l5-5 5 5H7z" />
+          </svg>
+        </button>
+        <span className="comment-score">{score}</span>
+        <button
+          type="button"
+          className={`comment-vote-btn comment-vote-down${currentVote === -1 ? ' active' : ''}`}
+          onClick={handleDown}
+          disabled={isPending}
+          title="Downvote"
+          aria-label="Downvote"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7 10l5 5 5-5H7z" />
+          </svg>
+        </button>
+      </div>
       <img
         src={getAuthorImage()}
         alt={author.username}

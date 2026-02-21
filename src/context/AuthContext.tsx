@@ -1,12 +1,12 @@
 import React, { useState, useEffect, type ReactNode } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from './AuthContextDef';
 import { login as authLogin, logout as authLogout, register as authRegister, googleLogin as authGoogleLogin } from '../services/auth.service';
 import { getUserById, updateUserProfile } from '../services/user.service';
 import type { IUser } from '../types';
 
-
-
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    const queryClient = useQueryClient();
     const [user, setUser] = useState<IUser | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -78,11 +78,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const logout = async () => {
         setIsLoading(true);
+
         try {
             await authLogout();
+
+            queryClient.clear();
             setUser(null);
         } catch (err) {
             console.error("Logout error", err);
+
+            queryClient.clear();
+            setUser(null);
         } finally {
             setIsLoading(false);
         }

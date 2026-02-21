@@ -39,7 +39,13 @@ const addRefreshSubscriber = (callback: (token: string) => void) => {
     refreshSubscribers.push(callback);
 };
 
-// Response interceptor to handle token expiration
+function clearAuthAndRedirectToLogin() {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('userId');
+    window.location.replace('/login');
+}
+
 apiClient.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
@@ -49,7 +55,6 @@ apiClient.interceptors.response.use(
             return Promise.reject(error);
         }
 
-        // Avoid infinite loops
         if (originalRequest.url?.includes('/auth/refresh') || originalRequest.url?.includes('/auth/login')) {
             return Promise.reject(error);
         }
@@ -91,14 +96,12 @@ apiClient.interceptors.response.use(
                 refreshSubscribers = [];
 
                 originalRequest.headers.set('Authorization', `Bearer ${token}`);
-                return apiClient(originalRequest);
 
+                return apiClient(originalRequest);
             } catch (refreshError) {
                 isRefreshing = false;
                 refreshSubscribers = [];
-
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('refreshToken');
+                clearAuthAndRedirectToLogin();
 
                 return Promise.reject(refreshError);
             }

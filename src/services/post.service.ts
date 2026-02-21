@@ -49,3 +49,13 @@ export const deletePost = async (postId: string) => {
     const response = await apiClient.delete(`/post/${postId}`);
     return response.data;
 };
+
+export const likePost = async (postId: string) => {
+    const response = await apiClient.post<IPost>(`/post/${postId}/like`);
+    return response.data;
+};
+
+export const unlikePost = async (postId: string) => {
+    const response = await apiClient.delete<IPost>(`/post/${postId}/like`);
+    return response.data;
+};
