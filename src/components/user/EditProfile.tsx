@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import ImageUpload from '../ImageUpload';
 import './Profile.css';
 import type { IImage } from '../../types';
@@ -15,6 +16,7 @@ interface IFormInput {
 const EditProfile: React.FC = () => {
   const { user, updateUser, isLoading } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { register, handleSubmit, setValue, watch } = useForm<IFormInput>();
   
   const profileImageValue = watch('profileImage');
@@ -52,6 +54,8 @@ const EditProfile: React.FC = () => {
       }
 
       await updateUser(updateData);
+
+      void queryClient.invalidateQueries({ queryKey: ['posts', 'infinite'] });
 
       navigate('/profile');
     } catch (error) {

@@ -3,9 +3,10 @@ import { getPostsPaginated, createPost } from '../services/post.service';
 
 interface UsePostsProps {
   limit?: number;
+  author?: string;
 }
 
-export const usePosts = ({ limit = 10 }: UsePostsProps = {}) => {
+export const usePosts = ({ limit = 10, author }: UsePostsProps = {}) => {
   const queryClient = useQueryClient();
 
   const {
@@ -16,8 +17,8 @@ export const usePosts = ({ limit = 10 }: UsePostsProps = {}) => {
     isLoading,
     isError,
   } = useInfiniteQuery({
-    queryKey: ['posts', 'infinite'],
-    queryFn: ({ pageParam }) => getPostsPaginated(pageParam, limit),
+    queryKey: ['posts', 'infinite', author],
+    queryFn: ({ pageParam }) => getPostsPaginated(pageParam, limit, author),
     getNextPageParam: (lastPage) => lastPage.pagination.nextCursor ?? undefined,
     initialPageParam: null as string | null,
   });
@@ -25,7 +26,7 @@ export const usePosts = ({ limit = 10 }: UsePostsProps = {}) => {
   const posts = data?.pages.flatMap(page => page.posts) ?? [];
 
   const createPostMutation = useMutation({
-    mutationFn: (postData: { message: string; author: string }) => createPost(postData),
+    mutationFn: (postData: { message: string; author: string; image?: string }) => createPost(postData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts', 'infinite'] });
     },

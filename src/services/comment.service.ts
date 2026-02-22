@@ -39,12 +39,27 @@ export const createComment = async (commentData: { body: string; postId: string;
     return response.data;
 };
 
-export const updateComment = async (commentId: string, commentData: Partial<IComment>) => {
+export const updateComment = async (commentId: string, commentData: { body: string }) => {
     const response = await apiClient.put<IComment>(`/comment/${commentId}`, commentData);
     return response.data;
 };
 
 export const deleteComment = async (commentId: string) => {
     const response = await apiClient.delete(`/comment/${commentId}`);
+    return response.data;
+};
+
+export const upvoteComment = async (commentId: string) => {
+    const response = await apiClient.post<IComment>(`/comment/${commentId}/vote`, { value: 1 });
+    return response.data;
+};
+
+export const downvoteComment = async (commentId: string) => {
+    const response = await apiClient.post<IComment>(`/comment/${commentId}/vote`, { value: -1 });
+    return response.data;
+};
+
+export const removeCommentVote = async (commentId: string) => {
+    const response = await apiClient.delete<IComment>(`/comment/${commentId}/vote`);
     return response.data;
 };

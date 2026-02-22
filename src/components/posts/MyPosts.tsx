@@ -1,18 +1,20 @@
 import React, { useRef, useEffect } from 'react';
+import { useAuth } from '../../hooks/useAuth';
 import { usePosts } from '../../hooks/usePosts';
 import PostCard from './PostCard';
 import './posts.css';
 
-const AllPosts: React.FC = () => {
+const MyPosts: React.FC = () => {
+  const { user } = useAuth();
   const {
     posts,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-    isError
-  } = usePosts({ limit: 5 });
-  
+    isError,
+  } = usePosts({ limit: 5, author: user!._id });
+
   const observerTarget = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -26,21 +28,14 @@ const AllPosts: React.FC = () => {
     );
 
     const currentTarget = observerTarget.current;
-    if (currentTarget) {
-      observer.observe(currentTarget);
-    }
-
-    return () => {
-      if (currentTarget) {
-        observer.unobserve(currentTarget);
-      }
-    };
+    if (currentTarget) observer.observe(currentTarget);
+    return () => { if (currentTarget) observer.unobserve(currentTarget); };
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   if (isLoading) {
     return (
       <div className="posts-container">
-        <div className="loading-spinner">Loading posts...</div>
+        <div className="loading-spinner">Loading your posts...</div>
       </div>
     );
   }
@@ -48,17 +43,24 @@ const AllPosts: React.FC = () => {
   if (isError) {
     return (
       <div className="posts-container">
-        <div className="error-message">Failed to load posts</div>
+        <div className="error-message">Failed to load your posts</div>
       </div>
     );
   }
 
   return (
     <div className="posts-container">
+      <div className="myposts-header">
+        <div className="myposts-title-row">
+          <span className="myposts-title">Posts created by you</span>
+          <span className="myposts-count">{posts.length} post{posts.length !== 1 ? 's' : ''}</span>
+        </div>
+      </div>
+
       <div className="posts-list">
         {posts.length === 0 ? (
           <div className="no-posts">
-            <p>No posts yet. Be the first to create one!</p>
+            <p>You haven't posted anything yet.</p>
           </div>
         ) : (
           <>
@@ -71,14 +73,14 @@ const AllPosts: React.FC = () => {
                 {isFetchingNextPage && (
                   <div className="loading-more">
                     <div className="spinner-small"></div>
-                    <span>Loading more posts...</span>
+                    <span>Loading more...</span>
                   </div>
                 )}
               </div>
             )}
 
             {!hasNextPage && posts.length > 0 && (
-              <p className="end-of-comments">That's all the posts!</p>
+              <p className="end-of-comments">That's all your posts!</p>
             )}
           </>
         )}
@@ -87,4 +89,4 @@ const AllPosts: React.FC = () => {
   );
 };
 
-export default AllPosts;
+export default MyPosts;

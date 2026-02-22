@@ -21,7 +21,7 @@ const Profile: React.FC = () => {
 
   return (
     <div className="profile-container">
-      <h2>User Profile</h2>
+      <h2>{user.username}</h2>
       <img 
         src={getProfileImageUrl()} 
         alt="Profile" 
@@ -31,14 +31,10 @@ const Profile: React.FC = () => {
         }}
       />
       <div className="profile-info">
-        <p><strong>Name:</strong> {user.username}</p>
         <p><strong>Email:</strong> {user.email}</p>
       </div>
       <Link to="/edit-profile">
         <button className="edit-profile-button">Edit Profile</button>
-      </Link>
-      <Link to="/" style={{ width: '100%', marginTop: '1rem' }}>
-        <button className="edit-profile-button">Back to Home</button>
       </Link>
     </div>
   );
