@@ -59,3 +59,10 @@ export const unlikePost = async (postId: string) => {
     const response = await apiClient.delete<IPost>(`/post/${postId}/like`);
     return response.data;
 };
+
+export const searchPosts = async (query: string) => {
+    const response = await apiClient.get<IPost[]>('/post/search', {
+        params: { query }
+    });
+    return response.data;
+};

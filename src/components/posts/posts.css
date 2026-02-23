@@ -5,6 +5,117 @@
     align-items: center;
 }
 
+.loading-spinner {
+    padding: 3rem;
+    text-align: center;
+    color: #646cff;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* ── Search Bar ── */
+.search-bar {
+    max-width: 600px;
+    width: 100%;
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+}
+
+.search-input-wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 12px 40px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: #1a1a1a;
+    color: inherit;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    color: #888;
+    pointer-events: none;
+}
+
+@media (prefers-color-scheme: light) {
+    .search-bar input {
+        background-color: #fff;
+        border-color: rgba(0, 0, 0, 0.1);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+}
+
+.search-bar input:focus {
+    border-color: #646cff;
+    box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+}
+
+.search-button {
+    background-color: #646cff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0 20px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.search-button:hover {
+    background-color: #535bf2;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(100, 108, 255, 0.3);
+}
+
+.search-button:active {
+    transform: translateY(0);
+}
+
+.clear-search {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    transition: background 0.2s, color 0.2s;
+}
+
+.clear-search:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+}
+
+@media (prefers-color-scheme: light) {
+    .clear-search:hover {
+        background: rgba(0, 0, 0, 0.05);
+        color: #555;
+    }
+}
+
 /* ── My Posts header ── */
 .myposts-header {
     max-width: 600px;
