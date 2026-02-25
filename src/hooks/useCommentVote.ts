@@ -1,6 +1,6 @@
 import { useRef, useCallback } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { InfiniteData } from '@tanstack/react-query';
+import type { InfiniteData, QueryKey } from '@tanstack/react-query';
 import { upvoteComment, downvoteComment, removeCommentVote } from '../services/comment.service';
 import type { CommentsResponse } from '../services/comment.service';
 import type { IComment, CommentVoteDirection } from '../types';
@@ -8,7 +8,7 @@ import type { IComment, CommentVoteDirection } from '../types';
 const DEBOUNCE_MS = 300;
 
 type Snapshot = {
-    previousComments: Array<[unknown, InfiniteData<CommentsResponse> | undefined]>;
+    previousComments: Array<[QueryKey, InfiniteData<CommentsResponse> | undefined]>;
 };
 
 function voteDeltas(oldDir: CommentVoteDirection, newDir: CommentVoteDirection): { deltaUp: number; deltaDown: number } {

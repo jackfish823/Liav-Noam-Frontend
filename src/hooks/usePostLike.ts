@@ -1,6 +1,6 @@
 import { useRef, useCallback } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { InfiniteData } from '@tanstack/react-query';
+import type { InfiniteData, QueryKey } from '@tanstack/react-query';
 import { likePost, unlikePost } from '../services/post.service';
 import type { PostsResponse } from '../services/post.service';
 import type { IPost } from '../types';
@@ -9,7 +9,7 @@ const DEBOUNCE_MS = 300;
 
 type Snapshot = {
     previousPost: IPost | undefined;
-    previousInfinite: Array<[unknown, InfiniteData<PostsResponse> | undefined]>;
+    previousInfinite: Array<[QueryKey, InfiniteData<PostsResponse> | undefined]>;
 };
 
 export const usePostLike = (postId: string) => {
