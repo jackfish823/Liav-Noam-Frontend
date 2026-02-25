@@ -31,6 +31,8 @@ const PostDetail: React.FC = () => {
     isCreatingComment,
     updateComment,
     isUpdatingComment,
+    deleteComment,
+    isDeletingComment,
   } = useCommentsByPost({ postId: postId || '', limit: 10 });
 
   useEffect(() => {
@@ -251,6 +253,8 @@ const PostDetail: React.FC = () => {
                     currentUserId={user?._id}
                     onUpdate={(commentId, body) => updateComment({ commentId, body })}
                     isUpdating={isUpdatingComment}
+                    onDelete={(commentId) => deleteComment(commentId)}
+                    isDeleting={isDeletingComment}
                   />
                 ))}
               </div>

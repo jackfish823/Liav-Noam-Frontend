@@ -860,6 +860,23 @@
     color: #ccc;
 }
 
+.comment-actions-inline {
+    display: flex;
+    gap: 4px;
+    margin-left: auto;
+    opacity: 0;
+    transition: opacity .15s;
+}
+
+.comment:hover .comment-actions-inline {
+    opacity: 1;
+}
+
+.comment-delete-btn:hover {
+    color: #ff6b6b !important;
+    background: rgba(255,107,107,.1) !important;
+}
+
 .comment-edit-area {
     display: flex;
     flex-direction: column;
