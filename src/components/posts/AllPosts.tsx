@@ -75,7 +75,7 @@ const AllPosts: React.FC = () => {
           </svg>
           <input 
             type="text" 
-            placeholder="Search posts (e.g. 'posts about cats with more than 5 likes')" 
+            placeholder="Search posts (e.g. 'posts about dogs with more than 5 likes')"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={handleKeyDown}

@@ -17,7 +17,7 @@ const queryClient = new QueryClient({
   },
 })
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '772452358726-mquijl8p4pr8v82jrtejtlg3pm2gf43e.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
