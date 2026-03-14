@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getCommentsByPostId, createComment, updateComment } from '../services/comment.service';
+import { getCommentsByPostId, createComment, updateComment, deleteComment } from '../services/comment.service';
 
 interface UseCommentsByPostProps {
   postId: string;
@@ -42,6 +42,14 @@ export const useCommentsByPost = ({ postId, limit = 5 }: UseCommentsByPostProps)
     },
   });
 
+  const deleteCommentMutation = useMutation({
+    mutationFn: (commentId: string) => deleteComment(commentId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['comments', postId] });
+      void queryClient.invalidateQueries({ queryKey: ['post', postId] }); // Update comment count
+    },
+  });
+
   return {
     comments,
     fetchNextPage,
@@ -54,5 +62,7 @@ export const useCommentsByPost = ({ postId, limit = 5 }: UseCommentsByPostProps)
     createCommentError: createCommentMutation.error,
     updateComment: updateCommentMutation.mutate,
     isUpdatingComment: updateCommentMutation.isPending,
+    deleteComment: deleteCommentMutation.mutate,
+    isDeletingComment: deleteCommentMutation.isPending,
   };
 };

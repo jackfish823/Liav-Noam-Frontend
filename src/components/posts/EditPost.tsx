@@ -138,7 +138,13 @@ const EditPost: FC = () => {
             <button
               type="button"
               className="create-post-cancel-btn"
-              onClick={() => navigate(postId ? `/posts/${postId}` : -1, { replace: true })}
+              onClick={() => {
+                if (postId) {
+                  navigate(`/posts/${postId}`, { replace: true });
+                } else {
+                  navigate(-1);
+                }
+              }}
               disabled={isSubmitting}
             >
               Cancel

@@ -5,6 +5,117 @@
     align-items: center;
 }
 
+.loading-spinner {
+    padding: 3rem;
+    text-align: center;
+    color: #646cff;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* ── Search Bar ── */
+.search-bar {
+    max-width: 600px;
+    width: 100%;
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+}
+
+.search-input-wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 12px 40px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: #1a1a1a;
+    color: inherit;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    color: #888;
+    pointer-events: none;
+}
+
+@media (prefers-color-scheme: light) {
+    .search-bar input {
+        background-color: #fff;
+        border-color: rgba(0, 0, 0, 0.1);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+}
+
+.search-bar input:focus {
+    border-color: #646cff;
+    box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+}
+
+.search-button {
+    background-color: #646cff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0 20px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.search-button:hover {
+    background-color: #535bf2;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(100, 108, 255, 0.3);
+}
+
+.search-button:active {
+    transform: translateY(0);
+}
+
+.clear-search {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    transition: background 0.2s, color 0.2s;
+}
+
+.clear-search:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+}
+
+@media (prefers-color-scheme: light) {
+    .clear-search:hover {
+        background: rgba(0, 0, 0, 0.05);
+        color: #555;
+    }
+}
+
 /* ── My Posts header ── */
 .myposts-header {
     max-width: 600px;
@@ -749,6 +860,23 @@
     color: #ccc;
 }
 
+.comment-actions-inline {
+    display: flex;
+    gap: 4px;
+    margin-left: auto;
+    opacity: 0;
+    transition: opacity .15s;
+}
+
+.comment:hover .comment-actions-inline {
+    opacity: 1;
+}
+
+.comment-delete-btn:hover {
+    color: #ff6b6b !important;
+    background: rgba(255,107,107,.1) !important;
+}
+
 .comment-edit-area {
     display: flex;
     flex-direction: column;
@@ -853,6 +981,103 @@
     color: #888;
     font-size: 1rem;
     font-style: italic;
+}
+
+/* ── Modal ── */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background-color: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.2s ease-out;
+}
+
+@media (prefers-color-scheme: light) {
+    .modal-content {
+        background-color: #fff;
+        border-color: rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-content h3 {
+    margin: 0 0 12px;
+    font-size: 1.25rem;
+}
+
+.modal-content p {
+    color: #888;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.modal-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    min-width: 100px;
+}
+
+.modal-btn-cancel {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: inherit;
+}
+
+.modal-btn-cancel:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.modal-btn-danger {
+    background-color: #ff6b6b;
+    color: white;
+}
+
+.modal-btn-danger:hover {
+    background-color: #ff5252;
+    transform: translateY(-1px);
+}
+
+.modal-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
 }
 
 /* Error State */

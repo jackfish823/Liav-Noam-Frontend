@@ -20,26 +20,26 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const { toggle, isPending } = usePostLike(postId);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const isOwner = user?._id === author._id;
 
-  const handleDelete = async () => {
+  const handleDeleteClick = () => {
     setMenuOpen(false);
+    setShowDeleteModal(true);
+  };
 
-    if (!window.confirm('Are you sure you want to delete this post?')) return;
-
+  const confirmDelete = async () => {
     setIsDeleting(true);
 
     try {
       await deletePost(postId);
-
       queryClient.invalidateQueries({ queryKey: ['posts', 'infinite'] });
       queryClient.removeQueries({ queryKey: ['post', postId] });
-
+      setShowDeleteModal(false);
     } catch (err) {
       console.error('Failed to delete post', err);
-    } finally {
       setIsDeleting(false);
     }
   };
@@ -123,17 +123,42 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
                   className="post-card-menu-item post-card-menu-item-danger"
                   onClick={(e) => {
                     e.preventDefault();
-                    void handleDelete();
+                    handleDeleteClick();
                   }}
                   disabled={isDeleting}
                 >
-                  {isDeleting ? 'Deleting...' : 'Delete'}
+                  Delete
                 </button>
               </div>
             )}
           </div>
         )}
       </div>
+
+      {showDeleteModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Delete Post?</h3>
+            <p>Are you sure you want to delete this post? This action cannot be undone.</p>
+            <div className="modal-actions">
+              <button 
+                className="modal-btn modal-btn-cancel" 
+                onClick={() => setShowDeleteModal(false)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button 
+                className="modal-btn modal-btn-danger" 
+                onClick={() => void confirmDelete()}
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {image?.url ? (
         <div className="post-card-image">
