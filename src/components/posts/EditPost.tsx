@@ -55,7 +55,7 @@ const EditPost: FC = () => {
 
     updatePost(
       { message: message.trim(), image: imageField },
-      { onSuccess: () => navigate(`/posts/${postId}`) }
+      { onSuccess: () => navigate(`/posts/${postId}`, {replace: true}) }
     );
   };
 
